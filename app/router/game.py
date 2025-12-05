@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..schemas.gameschema import CreateGame, Gameschema
+from ..schemas.gameschema import CreateGame, Gameschema,ReviewSchema,ReviewCreate
 from ..database.db import get_db
-from ..models.gamesmodel import Game,GameStat
+from ..models.gamesmodel import Game,GameStat,Review
 
 gamesrouter = APIRouter(
     prefix="/games",
@@ -41,3 +41,18 @@ def deletegame(id: int, db : Session = Depends(get_db)):
     db.delete(game)
     db.commit()
     return status.HTTP_204_NO_CONTENT
+
+@gamesrouter.post("/{id}/review", response_model=ReviewSchema,status_code=status.HTTP_201_CREATED)
+def addreview(id : int,review: ReviewCreate, db : Session = Depends(get_db)):
+    review = Review(score=review.score,comment=review.comment,gameid=id)
+    db.add(review)
+    db.commit()
+    db.refresh(review)
+    return review
+
+@gamesrouter.get("/{gameid}/review", response_model=list[ReviewSchema], status_code=status.HTTP_200_OK)
+def getgamereview(gameid : int, db: Session=Depends(get_db)):
+    reviews = db.query(Review).filter(Review.gameid==gameid).all()
+    if not reviews:
+        raise HTTPException(status_code=404, detail="Reviews are not available")
+    return reviews

@@ -18,6 +18,28 @@ class GamesBase(BaseModel):
     genre: str
     price: int
 
+
+
+class ReviewBase(BaseModel):
+    score: int
+    comment: str
+
+class ReviewCreate(ReviewBase):
+    pass
+
+class Review(ReviewBase):
+    gameid : int
+    model_config={
+        'from_attributes':True
+    }
+
+class ReviewSchema(ReviewBase):
+    id : int
+    gameid : int
+    model_config={
+        'from_attributes':True
+    }
+
 class Gameschema(GamesBase):
     id: int
     gamestat: GameStat
