@@ -50,4 +50,4 @@ jobs:
         run: |
           sed -i "s|IMAGE_URI|$IMAGE_URI|g" k8s/deployment.yaml 
           kubectl apply -f  k8s/deployment.yaml --validate=false
-          kubectl apply -f  k8s/service.yaml --validate=false
+          kubectl apply -f  k8s/services.yaml --validate=false
